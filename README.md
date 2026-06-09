@@ -1,7 +1,7 @@
 # StudyHub API — Sistema de Gestão de Salas de Estudo Virtuais
 
 [![Java](https://img.shields.io/badge/Java-21-orange?logo=openjdk)](https://openjdk.org/projects/jdk21/)
-[![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.x_/_4.x-brightgreen?logo=springboot)](https://spring.io/projects/spring-boot)
+[![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.4.3-brightgreen?logo=springboot)](https://spring.io/projects/spring-boot)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue?logo=postgresql)](https://www.postgresql.org/)
 [![Maven](https://img.shields.io/badge/Maven-Central-blueviolet?logo=apachemaven)](https://maven.apache.org/)
 
