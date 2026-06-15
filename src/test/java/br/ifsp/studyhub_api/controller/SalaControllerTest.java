@@ -14,7 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import br.ifsp.studyhub_api.config.SecurityConfig; 
+import br.ifsp.studyhub_api.security.SecurityConfigurations;
 import org.springframework.context.annotation.Import;
 
 import java.util.UUID;
@@ -26,19 +26,25 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-
 @WebMvcTest(SalaController.class)
-@Import(SecurityConfig.class)
-public class SalaControllerTests {
+@Import(SecurityConfigurations.class)
+@SuppressWarnings("null")
+public class SalaControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     @MockitoBean
     private SalaService service;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    @MockitoBean
+    private br.ifsp.studyhub_api.security.TokenService tokenService;
+
+    @MockitoBean
+    private br.ifsp.studyhub_api.repository.UsuarioRepository usuarioRepository;
 
     // --- TESTES DE CRIAÇÃO (US 1.1) ---
 
