@@ -118,3 +118,18 @@ Envie uma requisição para criar o seu perfil (ex: PROFESSOR ou ALUNO):
 * Crie uma nova requisição informando a URL desejada (`Ex: GET <http://localhost:8080/api/v1/salas>`).
 * Vá até a aba *Authorization*, selecione o tipo *Bearer Token* e cole o token gerado no login.
 * Clique em **Send**.
+
+#### Via HTTPie (Terminal)
+Se você prefere testar direto pela linha de comando usando o HTTPie, utilize os exemplos:
+
+* Login:
+  
+  ``` pwsh
+  http POST http://localhost:8080/api/v1/auth/login email="professor@ifsp.edu.br" senha="SenhaTeste@2026"
+  ```
+
+* Listar salas (enviando o Token):
+
+  ``` pwsh
+  http GET http://localhost:8080/api/v1/salas "Authorization:Bearer eyJhbGciO..."
+  ```
