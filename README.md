@@ -120,6 +120,7 @@ Envie uma requisição para criar o seu perfil (ex: PROFESSOR ou ALUNO):
 * Clique em **Send**.
 
 #### Via HTTPie (Terminal)
+
 Se você prefere testar direto pela linha de comando usando o HTTPie, utilize os exemplos:
 
 * Login:
