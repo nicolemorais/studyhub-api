@@ -39,15 +39,6 @@ public class SecurityFilter extends OncePerRequestFilter {
             if (email != null) {
                 UserDetails usuario = usuarioRepository.findByEmail(email).orElse(null);
 
-                System.out.println("--- DEBUG SECURITY FILTER ---");
-                System.out.println("E-mail extraído do Token: " + email);
-                System.out.println("Usuário encontrado no Banco? " + (usuario != null));
-
-                if (usuario != null) {
-                    System.out.println("Permissões que o Spring leu: " + usuario.getAuthorities());
-                }
-                System.out.println("-----------------------------");
-
                 if (usuario != null) {
 
                     var authentication = new UsernamePasswordAuthenticationToken(usuario, null,
@@ -59,9 +50,6 @@ public class SecurityFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    /**
-     * Método auxiliar para extrair o token removendo o prefixo "Bearer "
-     */
     private String recuperarToken(@NonNull HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");
         if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {

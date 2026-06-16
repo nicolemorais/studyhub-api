@@ -1,9 +1,10 @@
 package br.ifsp.studyhub_api.dto;
 
-import java.util.UUID;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 
-import org.springframework.lang.NonNull;
-
-public record MatriculaDTO(@NonNull UUID alunoId) {
-
-}
+public record MatriculaDTO(
+    @NotBlank(message = "O e-mail é obrigatório.")
+    @Email(message = "Informe um e-mail válido.")
+    String email
+) {}

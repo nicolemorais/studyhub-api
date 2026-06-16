@@ -9,10 +9,10 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 
 @ControllerAdvice
-
 public class ResourceExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
@@ -56,4 +56,15 @@ public class ResourceExceptionHandler {
         return ResponseEntity.status(status).body(err);
     }
 
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<StandardError> entityNotFound(EntityNotFoundException e, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.NOT_FOUND;
+        StandardError err = new StandardError(
+                Instant.now(),
+                status.value(),
+                "Entidade não encontrada",
+                e.getMessage(),
+                request.getRequestURI());
+        return ResponseEntity.status(status).body(err);
+    }
 }
