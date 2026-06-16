@@ -1,22 +1,30 @@
 package br.ifsp.studyhub_api.controller;
 
+import java.util.UUID;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import br.ifsp.studyhub_api.dto.GuiaRequestDTO;
 import br.ifsp.studyhub_api.dto.GuiaResponseDTO;
+import br.ifsp.studyhub_api.dto.MatriculaDTO;
 import br.ifsp.studyhub_api.dto.SalaRequestDTO;
 import br.ifsp.studyhub_api.dto.SalaResponseDTO;
 import br.ifsp.studyhub_api.service.GuiaService;
 import br.ifsp.studyhub_api.service.SalaService;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
-import org.springframework.lang.NonNull;
-
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/salas")
@@ -38,7 +46,7 @@ public class SalaController {
     @PreAuthorize("hasAnyRole('PROFESSOR', 'ALUNO')")
     public ResponseEntity<Page<SalaResponseDTO>> findAll(
             @PageableDefault(size = 10, sort = "titulo") Pageable pageable) {
-        
+
         Page<SalaResponseDTO> page = salaService.findAll(pageable);
         return ResponseEntity.ok(page);
     }
@@ -57,7 +65,28 @@ public class SalaController {
         return ResponseEntity.noContent().build();
     }
 
-     /**
+    @PostMapping("/{id}/matricular")
+    @PreAuthorize("hasAnyRole('PROFESSOR')")
+    public ResponseEntity<Void> matricularAluno(
+            @PathVariable @NonNull UUID id,
+            @RequestBody MatriculaDTO dto) {
+
+        salaService.matricularAluno(id, dto.alunoId());
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{id}/alunos/{alunoId}")
+    @PreAuthorize("hasRole('PROFESSOR')")
+    public ResponseEntity<Void> removerAluno(
+            @PathVariable @NonNull UUID id,
+            @PathVariable @NonNull UUID alunoId) {
+
+        salaService.removerAluno(id, alunoId);
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
      * Endpoint para criar um roteiro pedagógico dentro de uma sala.
      * Rota completa: POST /api/v1/salas/{salaId}/guias
      */
@@ -68,6 +97,6 @@ public class SalaController {
             @Valid @RequestBody GuiaRequestDTO dto) {
 
         GuiaResponseDTO response = guiaService.criar(salaId, dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response); 
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }

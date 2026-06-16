@@ -1,10 +1,21 @@
 package br.ifsp.studyhub_api.model;
 
-import br.ifsp.studyhub_api.exception.BusinessException;
-import jakarta.persistence.*;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.UUID;
+
+import br.ifsp.studyhub_api.exception.BusinessException;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "tb_salas")
@@ -23,10 +34,9 @@ public class Sala {
     @JoinColumn(name = "criador_id", nullable = false)
     private Usuario criador;
 
-
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "tb_salas_alunos", joinColumns = @JoinColumn(name = "sala_id"), inverseJoinColumns = @JoinColumn(name = "usuario_id"))
-    private List<Usuario> alunos = new ArrayList<>();
+    private Set<Usuario> alunos = new LinkedHashSet<>();
 
     protected Sala() {
     }
@@ -36,7 +46,7 @@ public class Sala {
             throw new BusinessException("O nome da sala é obrigatório para sua criação.");
         }
 
-        if (criador == null){
+        if (criador == null) {
             throw new BusinessException("A sala precisa ter um professor responsável.");
         }
 
@@ -46,12 +56,15 @@ public class Sala {
     }
 
     public void adicionarAluno(Usuario aluno) {
-        if (!this.alunos.contains(aluno)) {
-            this.alunos.add(aluno);
-        }
+        if (aluno == null)
+            return;
+
+        this.alunos.add(aluno);
     }
 
     public void removerAluno(Usuario aluno) {
+        if (aluno == null)
+            return;
         this.alunos.remove(aluno);
     }
 
@@ -67,8 +80,7 @@ public class Sala {
         return descricao;
     }
 
-    public List<Usuario> getAlunos() {
-        return alunos;
+    public Set<Usuario> getAlunos() {
+        return this.alunos;
     }
-
 }
