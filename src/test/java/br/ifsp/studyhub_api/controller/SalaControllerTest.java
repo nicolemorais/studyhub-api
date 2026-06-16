@@ -1,6 +1,7 @@
 package br.ifsp.studyhub_api.controller;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -52,7 +53,6 @@ public class SalaControllerTest {
 
     @MockitoBean
     private SalaService salaService;
-
 
     @MockitoBean
     private TokenService tokenService;
@@ -144,14 +144,14 @@ public class SalaControllerTest {
                 .andExpect(status().isNotFound());
     }
 
-
     @Test
     @DisplayName("Deve permitir que PROFESSOR matricule um aluno e retornar 204 No Content")
-    @WithMockUser(roles = "PROFESSOR") 
+    @WithMockUser(roles = "PROFESSOR")
     void matricularAlunoComoProfessor() throws Exception {
-        MatriculaDTO dto = new MatriculaDTO(alunoId);
-        
-        doNothing().when(salaService).matricularAluno(salaId, alunoId);
+        String emailAluno = "aluno.teste@ifsp.edu.br";
+        MatriculaDTO dto = new MatriculaDTO(emailAluno);
+
+        doNothing().when(salaService).matricularAluno(any(UUID.class), eq(emailAluno));
 
         mockMvc.perform(post("/salas/{id}/matricular", salaId)
                 .with(csrf())
@@ -164,7 +164,8 @@ public class SalaControllerTest {
     @DisplayName("Deve barrar ALUNO que tentar matricular alguém e retornar 403 Forbidden")
     @WithMockUser(roles = "ALUNO")
     void matricularAlunoComoAlunoDeveSerBarrado() throws Exception {
-        MatriculaDTO dto = new MatriculaDTO(alunoId);
+        String emailAluno = "aluno.teste@ifsp.edu.br";
+        MatriculaDTO dto = new MatriculaDTO(emailAluno);
 
         mockMvc.perform(post("/salas/{id}/matricular", salaId)
                 .with(csrf())

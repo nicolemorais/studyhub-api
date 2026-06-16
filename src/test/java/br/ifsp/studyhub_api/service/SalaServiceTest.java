@@ -6,12 +6,14 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -23,6 +25,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import br.ifsp.studyhub_api.dto.SalaAlunosResponseDTO;
+import br.ifsp.studyhub_api.model.Perfil;
 import br.ifsp.studyhub_api.model.Sala;
 import br.ifsp.studyhub_api.model.Usuario;
 import br.ifsp.studyhub_api.repository.SalaRepository;
@@ -44,6 +48,7 @@ class SalaServiceTest {
 
     private UUID salaId;
     private UUID alunoId;
+    private String emailAluno;
     private Sala salaMock;
     private Usuario alunoMock;
     private Usuario professorMock;
@@ -52,25 +57,26 @@ class SalaServiceTest {
     void setUp() {
         salaId = UUID.randomUUID();
         alunoId = UUID.randomUUID();
-        
+        emailAluno = "aluno.teste@ifsp.edu.br";
+
         professorMock = mock(Usuario.class);
         alunoMock = mock(Usuario.class);
-   
+
         salaMock = new Sala("Java Avançado", "Sala de testes", professorMock);
     }
 
     @Test
     @DisplayName("Deve matricular um aluno com sucesso na sala")
     void matricularAlunoComSucesso() {
+        when(alunoMock.getPerfil()).thenReturn(Perfil.ALUNO);
+
         when(salaRepository.findById(salaId)).thenReturn(Optional.of(salaMock));
-        when(usuarioRepository.findById(alunoId)).thenReturn(Optional.of(alunoMock));
+        when(usuarioRepository.findByEmail(emailAluno)).thenReturn(Optional.of(alunoMock));
 
-       
-        assertDoesNotThrow(() -> salaService.matricularAluno(salaId, alunoId));
+        assertDoesNotThrow(() -> salaService.matricularAluno(salaId, emailAluno));
 
-  
         assertTrue(salaMock.getAlunos().contains(alunoMock), "O aluno deveria estar na lista de matriculados");
-        verify(salaRepository, times(1)).save(salaMock); // Garante que o save foi chamado
+        verify(salaRepository, times(1)).save(salaMock);
     }
 
     @Test
@@ -79,34 +85,32 @@ class SalaServiceTest {
         when(salaRepository.findById(salaId)).thenReturn(Optional.empty());
 
         EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
-            salaService.matricularAluno(salaId, alunoId);
+            salaService.matricularAluno(salaId, emailAluno);
         });
 
         assertEquals("Sala não encontrada.", exception.getMessage());
-        verify(usuarioRepository, never()).findById(any());
-        verify(salaRepository, never()).save(any());
+        verify(usuarioRepository, never()).findByEmail(anyString());
     }
 
     @Test
     @DisplayName("Deve lançar exceção quando o aluno não for encontrado na matrícula")
-    void matricularAlunoNonExistent() {
+    void matricularAlunoNaoExiste() {
         when(salaRepository.findById(salaId)).thenReturn(Optional.of(salaMock));
-        when(usuarioRepository.findById(alunoId)).thenReturn(Optional.empty());
+        when(usuarioRepository.findByEmail(emailAluno)).thenReturn(Optional.empty());
 
         EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
-            salaService.matricularAluno(salaId, alunoId);
+            salaService.matricularAluno(salaId, emailAluno);
         });
 
         assertEquals("Aluno não encontrado.", exception.getMessage());
         verify(salaRepository, never()).save(any());
     }
 
-
     @Test
     @DisplayName("Deve remover um aluno da sala com sucesso")
     void removerAlunoComSucesso() {
         salaMock.adicionarAluno(alunoMock);
-        
+
         when(salaRepository.findById(salaId)).thenReturn(Optional.of(salaMock));
         when(usuarioRepository.findById(alunoId)).thenReturn(Optional.of(alunoMock));
 
@@ -127,4 +131,32 @@ class SalaServiceTest {
 
         verify(salaRepository, never()).save(any());
     }
+
+    @Test
+    @DisplayName("Deve listar salas e alunos de um professor com sucesso")
+    void listarSalasEAlunosDoProfessorComSucesso() {
+        String emailProf = "professor@ifsp.edu.br";
+        when(salaRepository.buscarSalasEProfessorComAlunos(emailProf)).thenReturn(List.of(salaMock));
+
+        List<SalaAlunosResponseDTO> resultado = salaService.listarSalasEAlunosDoProfessor(emailProf);
+
+        // Assert
+        assertFalse(resultado.isEmpty());
+        assertEquals(salaMock.getTitulo(), resultado.get(0).titulo());
+        verify(salaRepository, times(1)).buscarSalasEProfessorComAlunos(emailProf);
+    }
+
+    @Test
+    @DisplayName("Deve listar salas e companheiros de classe de um aluno com sucesso")
+    void listarSalasEAlunosDoAlunoComSucesso() {
+        String emailAluno = "aluno@ifsp.edu.br";
+        when(salaRepository.buscarSalasEAlunosPorAlunoEmail(emailAluno)).thenReturn(List.of(salaMock));
+
+        List<SalaAlunosResponseDTO> resultado = salaService.listarSalasEAlunosDoAluno(emailAluno);
+
+        assertFalse(resultado.isEmpty());
+        assertEquals(salaMock.getTitulo(), resultado.get(0).titulo());
+        verify(salaRepository, times(1)).buscarSalasEAlunosPorAlunoEmail(emailAluno);
+    }
+
 }
