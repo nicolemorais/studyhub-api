@@ -1,8 +1,9 @@
 package br.ifsp.studyhub_api.dto;
 
+import java.util.List;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
-import java.util.List;
 
 public record GuiaRequestDTO(
     @NotBlank(message = "O título é obrigatório.")

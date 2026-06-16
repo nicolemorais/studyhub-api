@@ -1,18 +1,20 @@
 package br.ifsp.studyhub_api.service;
 
-import br.ifsp.studyhub_api.dto.GuiaPutRequestDTO;
-import br.ifsp.studyhub_api.dto.GuiaRequestDTO;
-import br.ifsp.studyhub_api.dto.GuiaResponseDTO;
-import br.ifsp.studyhub_api.dto.TopicoPutRequestDTO;
-import br.ifsp.studyhub_api.dto.TopicoRequestDTO;
-import br.ifsp.studyhub_api.exception.BusinessException;
-import br.ifsp.studyhub_api.exception.ResourceNotFoundException;
-import br.ifsp.studyhub_api.model.Guia;
-import br.ifsp.studyhub_api.model.Usuario;
-import br.ifsp.studyhub_api.model.Sala;
-import br.ifsp.studyhub_api.model.Topico;
-import br.ifsp.studyhub_api.repository.GuiaRepository;
-import br.ifsp.studyhub_api.repository.SalaRepository;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,14 +24,19 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import br.ifsp.studyhub_api.dto.GuiaPutRequestDTO;
+import br.ifsp.studyhub_api.dto.GuiaRequestDTO;
+import br.ifsp.studyhub_api.dto.GuiaResponseDTO;
+import br.ifsp.studyhub_api.dto.TopicoPutRequestDTO;
+import br.ifsp.studyhub_api.dto.TopicoRequestDTO;
+import br.ifsp.studyhub_api.exception.BusinessException;
+import br.ifsp.studyhub_api.exception.ResourceNotFoundException;
+import br.ifsp.studyhub_api.model.Guia;
+import br.ifsp.studyhub_api.model.Sala;
+import br.ifsp.studyhub_api.model.Topico;
+import br.ifsp.studyhub_api.model.Usuario;
+import br.ifsp.studyhub_api.repository.GuiaRepository;
+import br.ifsp.studyhub_api.repository.SalaRepository;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("null")

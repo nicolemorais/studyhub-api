@@ -1,7 +1,8 @@
 package br.ifsp.studyhub_api.dto;
 
-import jakarta.validation.constraints.NotBlank;
 import java.util.UUID;
+
+import jakarta.validation.constraints.NotBlank;
 
 public record TopicoPutRequestDTO(
     UUID id,

@@ -1,13 +1,5 @@
 package br.ifsp.studyhub_api.controller;
 
-import br.ifsp.studyhub_api.dto.LoginRequestDTO;
-import br.ifsp.studyhub_api.dto.TokenResponseDTO;
-import br.ifsp.studyhub_api.dto.UsuarioRequestDTO;
-import br.ifsp.studyhub_api.exception.BusinessException;
-import br.ifsp.studyhub_api.model.Usuario;
-import br.ifsp.studyhub_api.repository.UsuarioRepository;
-import br.ifsp.studyhub_api.security.TokenService;
-import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -17,6 +9,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import br.ifsp.studyhub_api.dto.LoginRequestDTO;
+import br.ifsp.studyhub_api.dto.TokenResponseDTO;
+import br.ifsp.studyhub_api.dto.UsuarioRequestDTO;
+import br.ifsp.studyhub_api.exception.BusinessException;
+import br.ifsp.studyhub_api.model.Usuario;
+import br.ifsp.studyhub_api.repository.UsuarioRepository;
+import br.ifsp.studyhub_api.security.TokenService;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/auth")

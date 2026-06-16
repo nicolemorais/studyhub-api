@@ -1,8 +1,9 @@
 package br.ifsp.studyhub_api.dto;
 
-import br.ifsp.studyhub_api.model.Guia;
 import java.util.List;
 import java.util.UUID;
+
+import br.ifsp.studyhub_api.model.Guia;
 
 public record GuiaResponseDTO(
         UUID id,

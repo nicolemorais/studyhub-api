@@ -1,13 +1,22 @@
 package br.ifsp.studyhub_api.model;
 
-import br.ifsp.studyhub_api.exception.BusinessException;
-import jakarta.persistence.*;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import br.ifsp.studyhub_api.exception.BusinessException;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "tb_usuarios")
@@ -72,7 +81,7 @@ public class Usuario implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         
-        return List.of(new SimpleGrantedAuthority("ROLE_" + this.perfil.name()));
+        return List.of(new SimpleGrantedAuthority(this.perfil.getAuthority()));
     }
 
     @Override

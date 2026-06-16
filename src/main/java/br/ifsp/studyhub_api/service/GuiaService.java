@@ -1,16 +1,20 @@
 package br.ifsp.studyhub_api.service;
 
-import br.ifsp.studyhub_api.dto.*;
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.lang.NonNull;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import br.ifsp.studyhub_api.dto.GuiaPutRequestDTO;
+import br.ifsp.studyhub_api.dto.GuiaRequestDTO;
+import br.ifsp.studyhub_api.dto.GuiaResponseDTO;
 import br.ifsp.studyhub_api.exception.ResourceNotFoundException;
 import br.ifsp.studyhub_api.model.Guia;
 import br.ifsp.studyhub_api.model.Sala;
 import br.ifsp.studyhub_api.repository.GuiaRepository;
 import br.ifsp.studyhub_api.repository.SalaRepository;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import java.util.List;
-import java.util.UUID;
-import org.springframework.lang.NonNull;
 
 @Service
 public class GuiaService {

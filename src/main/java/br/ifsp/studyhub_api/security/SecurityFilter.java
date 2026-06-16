@@ -1,17 +1,19 @@
 package br.ifsp.studyhub_api.security;
 
-import br.ifsp.studyhub_api.repository.UsuarioRepository;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.lang.NonNull;
-import java.io.IOException;
+
+import br.ifsp.studyhub_api.repository.UsuarioRepository;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Component
 public class SecurityFilter extends OncePerRequestFilter {
@@ -25,7 +27,8 @@ public class SecurityFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(@NonNull HttpServletRequest request, @ NonNull HttpServletResponse response, @NonNull FilterChain filterChain)
+    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
+            @NonNull FilterChain filterChain)
             throws ServletException, IOException {
 
         String token = recuperarToken(request);
@@ -36,12 +39,21 @@ public class SecurityFilter extends OncePerRequestFilter {
             if (email != null) {
                 UserDetails usuario = usuarioRepository.findByEmail(email).orElse(null);
 
+                System.out.println("--- DEBUG SECURITY FILTER ---");
+                System.out.println("E-mail extraído do Token: " + email);
+                System.out.println("Usuário encontrado no Banco? " + (usuario != null));
+
+                if (usuario != null) {
+                    System.out.println("Permissões que o Spring leu: " + usuario.getAuthorities());
+                }
+                System.out.println("-----------------------------");
+
                 if (usuario != null) {
 
                     var authentication = new UsernamePasswordAuthenticationToken(usuario, null,
                             usuario.getAuthorities());
                     SecurityContextHolder.getContext().setAuthentication(authentication);
-                } 
+                }
             }
         }
         filterChain.doFilter(request, response);

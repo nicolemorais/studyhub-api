@@ -1,8 +1,17 @@
 package br.ifsp.studyhub_api.model;
 
-import br.ifsp.studyhub_api.exception.BusinessException;
-import jakarta.persistence.*;
 import java.util.UUID;
+
+import br.ifsp.studyhub_api.exception.BusinessException;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "tb_topicos")

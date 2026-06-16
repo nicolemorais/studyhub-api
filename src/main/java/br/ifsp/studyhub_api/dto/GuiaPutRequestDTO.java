@@ -1,8 +1,9 @@
 package br.ifsp.studyhub_api.dto;
 
+import java.util.List;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
-import java.util.List;
 
 public record GuiaPutRequestDTO(
     @NotBlank(message = "O título da guia não pode ser alterado para um valor vazio.")
