@@ -31,8 +31,8 @@ public class Sala {
     private String descricao;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "criador_id", nullable = false)
-    private Usuario criador;
+    @JoinColumn(name = "professor_id", nullable = false)
+    private Usuario professor;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "tb_salas_alunos", joinColumns = @JoinColumn(name = "sala_id"), inverseJoinColumns = @JoinColumn(name = "usuario_id"))
@@ -41,18 +41,18 @@ public class Sala {
     protected Sala() {
     }
 
-    public Sala(String titulo, String descricao, Usuario criador) {
+    public Sala(String titulo, String descricao, Usuario professor) {
         if (titulo == null || titulo.isBlank()) {
             throw new BusinessException("O nome da sala é obrigatório para sua criação.");
         }
 
-        if (criador == null) {
+        if (professor == null) {
             throw new BusinessException("A sala precisa ter um professor responsável.");
         }
 
         this.titulo = titulo;
         this.descricao = descricao;
-        this.criador = criador;
+        this.professor = professor;
     }
 
     public void adicionarAluno(Usuario aluno) {

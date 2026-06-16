@@ -25,7 +25,7 @@ public class Topico {
     private String titulo;
 
     @Column(columnDefinition = "TEXT", nullable = false)
-    private String descricao;
+    private String conteudo;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "guia_id", nullable = false)
@@ -34,16 +34,16 @@ public class Topico {
     protected Topico() {
     }
 
-    public Topico(String titulo, String descricao, Guia guia) {
+    public Topico(String titulo, String conteudo, Guia guia) {
         if (titulo == null || titulo.isBlank()) {
             throw new BusinessException("O título do tópico é obrigatório.");
         }
-        if (descricao == null || descricao.isBlank()) {
+        if (conteudo == null || conteudo.isBlank()) {
             throw new BusinessException("A descrição do assunto do tópico é obrigatória.");
         }
 
         this.titulo = titulo;
-        this.descricao = descricao;
+        this.conteudo = conteudo;
         this.guia = guia;
     }
 
@@ -55,15 +55,15 @@ public class Topico {
         return titulo;
     }
 
-    public String getDescricao() {
-        return descricao;
+    public String getConteudo() {
+        return conteudo;
     }
 
     public Guia getGuia() {
         return guia;
     }
 
-    public void alterarConteudo(String novoTitulo, String novaDescricao) {
+    public void alterarConteudo(String novoTitulo, String novoConteudo) {
         if (novoTitulo != null) {
             if (novoTitulo.isBlank()) {
                 throw new BusinessException("O título do tópico não pode ser alterado para um valor vazio.");
@@ -71,12 +71,12 @@ public class Topico {
             this.titulo = novoTitulo;
         }
         
-        if (novaDescricao != null) {
-            if (novaDescricao.isBlank()) {
+        if (novoConteudo != null) {
+            if (novoConteudo.isBlank()) {
                 throw new BusinessException(
                         "Erro de Validação: A descrição do assunto não pode ser alterada para um valor vazio.");
             }
-            this.descricao = novaDescricao;
+            this.conteudo = novoConteudo;
         }
     }
 }
