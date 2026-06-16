@@ -1,6 +1,7 @@
 package br.ifsp.studyhub_api.controller;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -22,11 +23,15 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import br.ifsp.studyhub_api.dto.MatriculaDTO;
 import br.ifsp.studyhub_api.dto.SalaRequestDTO;
 import br.ifsp.studyhub_api.dto.SalaResponseDTO;
 import br.ifsp.studyhub_api.exception.ResourceNotFoundException;
+import br.ifsp.studyhub_api.repository.UsuarioRepository;
 import br.ifsp.studyhub_api.security.SecurityConfigurations;
+import br.ifsp.studyhub_api.security.TokenService;
 import br.ifsp.studyhub_api.service.SalaService;
+import br.ifsp.studyhub_api.service.GuiaService;
 
 @WebMvcTest(SalaController.class)
 @Import(SecurityConfigurations.class)
@@ -36,17 +41,24 @@ public class SalaControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    private final UUID salaId = UUID.randomUUID();
+    private final UUID alunoId = UUID.randomUUID();
+
     @Autowired
     private ObjectMapper objectMapper;
 
     @MockitoBean
-    private SalaService service;
+    private GuiaService guiaService;
 
     @MockitoBean
-    private br.ifsp.studyhub_api.security.TokenService tokenService;
+    private SalaService salaService;
+
 
     @MockitoBean
-    private br.ifsp.studyhub_api.repository.UsuarioRepository usuarioRepository;
+    private TokenService tokenService;
+
+    @MockitoBean
+    private UsuarioRepository usuarioRepository;
 
     // --- TESTES DE CRIAÇÃO (US 1.1) ---
 
@@ -58,7 +70,7 @@ public class SalaControllerTest {
         UUID expectedId = UUID.randomUUID();
         SalaResponseDTO responseDTO = new SalaResponseDTO(expectedId, requestDTO.titulo(), requestDTO.descricao());
 
-        Mockito.when(service.insert(any(SalaRequestDTO.class))).thenReturn(responseDTO);
+        Mockito.when(salaService.insert(any(SalaRequestDTO.class))).thenReturn(responseDTO);
 
         mockMvc.perform(post("/salas")
                 .with(csrf())
@@ -102,7 +114,7 @@ public class SalaControllerTest {
     @DisplayName("US 1.2 - CA1: Deve retornar 204 No Content ao deletar id existente como Professor")
     public void deleteShouldReturnNoContentWhenIdExists() throws Exception {
         UUID existingId = UUID.randomUUID();
-        Mockito.doNothing().when(service).delete(existingId);
+        Mockito.doNothing().when(salaService).delete(existingId);
 
         mockMvc.perform(delete("/salas/{id}", existingId)
                 .with(csrf()))
@@ -125,10 +137,59 @@ public class SalaControllerTest {
     @DisplayName("US 1.2 - CA2: Deve retornar 404 Not Found se o ID não existir")
     public void deleteShouldReturnNotFoundWhenIdDoesNotExist() throws Exception {
         UUID nonExistingId = UUID.randomUUID();
-        Mockito.doThrow(new ResourceNotFoundException("Sala não encontrada")).when(service).delete(nonExistingId);
+        Mockito.doThrow(new ResourceNotFoundException("Sala não encontrada")).when(salaService).delete(nonExistingId);
 
         mockMvc.perform(delete("/salas/{id}", nonExistingId)
                 .with(csrf()))
                 .andExpect(status().isNotFound());
+    }
+
+
+    @Test
+    @DisplayName("Deve permitir que PROFESSOR matricule um aluno e retornar 204 No Content")
+    @WithMockUser(roles = "PROFESSOR") 
+    void matricularAlunoComoProfessor() throws Exception {
+        MatriculaDTO dto = new MatriculaDTO(alunoId);
+        
+        doNothing().when(salaService).matricularAluno(salaId, alunoId);
+
+        mockMvc.perform(post("/salas/{id}/matricular", salaId)
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("Deve barrar ALUNO que tentar matricular alguém e retornar 403 Forbidden")
+    @WithMockUser(roles = "ALUNO")
+    void matricularAlunoComoAlunoDeveSerBarrado() throws Exception {
+        MatriculaDTO dto = new MatriculaDTO(alunoId);
+
+        mockMvc.perform(post("/salas/{id}/matricular", salaId)
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("Deve permitir que PROFESSOR remova um aluno e retornar 204 No Content")
+    @WithMockUser(roles = "PROFESSOR")
+    void removerAlunoComoProfessor() throws Exception {
+        doNothing().when(salaService).removerAluno(salaId, alunoId);
+
+        mockMvc.perform(delete("/salas/{id}/alunos/{alunoId}", salaId, alunoId)
+                .with(csrf()))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("Deve barrar ALUNO que tentar remover alguém e retornar 403 Forbidden")
+    @WithMockUser(roles = "ALUNO")
+    void removerAlunoComoAlunoDeveSerBarrado() throws Exception {
+        mockMvc.perform(delete("/salas/{id}/alunos/{alunoId}", salaId, alunoId)
+                .with(csrf()))
+                .andExpect(status().isForbidden());
     }
 }
