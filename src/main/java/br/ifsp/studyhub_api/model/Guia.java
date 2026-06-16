@@ -30,6 +30,9 @@ public class Guia {
     @Column(nullable = false)
     private String titulo;
 
+    @Column(columnDefinition = "TEXT", nullable = true)
+    private String descricao;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sala_id", nullable = false)
     private Sala sala;

@@ -39,7 +39,7 @@ public class Topico {
             throw new BusinessException("O título do tópico é obrigatório.");
         }
         if (conteudo == null || conteudo.isBlank()) {
-            throw new BusinessException("A descrição do assunto do tópico é obrigatória.");
+            throw new BusinessException("O conteúdo do tópico é obrigatório.");
         }
 
         this.titulo = titulo;

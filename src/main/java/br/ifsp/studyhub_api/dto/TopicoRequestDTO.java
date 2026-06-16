@@ -7,5 +7,5 @@ public record TopicoRequestDTO(
     String titulo,
 
     @NotBlank(message = "A descrição do assunto do tópico é obrigatória.")
-    String descricao
+    String conteudo
 ) {}
