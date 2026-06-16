@@ -48,7 +48,7 @@ public class GuiaService {
                 .orElseThrow(() -> new ResourceNotFoundException("Sala não encontrada com o ID: " + salaId));
 
         List<Guia.DadosTopico> topicosIniciais = dto.topicos().stream()
-                .map(t -> new Guia.DadosTopico(null, t.titulo(), t.descricao()))
+                .map(t -> new Guia.DadosTopico(null, t.titulo(), t.conteudo()))
                 .toList();
 
         Guia guia = new Guia(dto.titulo(), sala, topicosIniciais);
