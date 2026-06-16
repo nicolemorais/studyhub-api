@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -23,6 +24,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
 import br.ifsp.studyhub_api.dto.GuiaPutRequestDTO;
 import br.ifsp.studyhub_api.dto.GuiaRequestDTO;
@@ -69,7 +72,7 @@ class GuiaServiceTest {
     @DisplayName("Deve criar um guia de estudos com sucesso quando os dados forem válidos")
     void criarComSucesso() {
         TopicoRequestDTO topicoDto = new TopicoRequestDTO("Introdução", "Conteúdo inicial da ementa");
-        GuiaRequestDTO requestDto = new GuiaRequestDTO("Módulo 1", List.of(topicoDto),
+        GuiaRequestDTO requestDto = new GuiaRequestDTO("Módulo 1", "", List.of(topicoDto),
                 List.of("http://teste.com/aula.pdf"));
 
         when(salaRepository.findById(salaId)).thenReturn(Optional.of(salaMock));
@@ -87,19 +90,31 @@ class GuiaServiceTest {
     @Test
     @DisplayName("Deve lançar BusinessException ao tentar criar guia com arquivos executáveis")
     void criarComArquivoProibido() {
-        TopicoRequestDTO topicoDto = new TopicoRequestDTO("Álgebra", "Descrição");
-        GuiaRequestDTO requestDto = new GuiaRequestDTO("Guia Bloqueado", List.of(topicoDto),
-                List.of("arquivo.exe"));
 
         when(salaRepository.findById(salaId)).thenReturn(Optional.of(salaMock));
 
+        TopicoRequestDTO topicoDto = new TopicoRequestDTO("Título do Tópico",
+                "Conteúdo válido para passar na validação");
+        GuiaRequestDTO guiaDto = new GuiaRequestDTO(
+                "Título do Guia",
+                "Descrição do Guia",
+                List.of(topicoDto),
+                List.of());
+
+        MultipartFile arquivoProibido = new MockMultipartFile(
+                "arquivos",
+                "EXECUTAVEL.exe",
+                "application/x-msdownload",
+                "conteudo_falso".getBytes());
+
         BusinessException exception = assertThrows(BusinessException.class, () -> {
-            guiaService.criar(salaId, requestDto);
+            guiaService.criarGuiaComArquivos(salaId, guiaDto, List.of(arquivoProibido));
         });
 
         assertEquals("Não é permitido o upload de arquivos executáveis.",
                 exception.getMessage());
-        verify(guiaRepository, never()).save(any(Guia.class));
+
+        verify(guiaRepository, never()).save(any());
     }
 
     @Test
@@ -149,7 +164,7 @@ class GuiaServiceTest {
         assertNotNull(response);
         assertEquals(1, response.topicos().size());
         assertEquals("Tópico que Fica", response.topicos().get(0).titulo());
-        assertEquals("Nova Descrição", response.topicos().get(0).descricao());
+        assertEquals("Nova Descrição", response.topicos().get(0).conteudo());
         verify(guiaRepository, times(1)).save(any(Guia.class));
     }
 
@@ -170,25 +185,28 @@ class GuiaServiceTest {
     @Test
     @DisplayName("Deve excluir um guia de estudos e suas dependências com sucesso")
     void excluirComSucesso() {
-        when(guiaRepository.existsById(guiaId)).thenReturn(true);
+        UUID guiaId = UUID.randomUUID();
+        Guia guiaMock = mock(Guia.class);
+
+        when(guiaRepository.findById(guiaId)).thenReturn(Optional.of(guiaMock));
 
         assertDoesNotThrow(() -> guiaService.excluir(guiaId));
 
-        verify(guiaRepository, times(1)).existsById(guiaId);
-        verify(guiaRepository, times(1)).deleteById(guiaId);
+        verify(guiaRepository, times(1)).delete(guiaMock);
     }
 
     @Test
     @DisplayName("Deve lançar ResourceNotFoundException ao tentar excluir um guia com ID inexistente")
     void excluirIdInexistente() {
-        
-      when(guiaRepository.existsById(guiaId)).thenReturn(false);
+        UUID guiaId = UUID.randomUUID();
+
+        when(guiaRepository.findById(guiaId)).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class, () -> {
             guiaService.excluir(guiaId);
         });
-        
-        verify(guiaRepository, times(1)).existsById(guiaId);
+
+        verify(guiaRepository, times(1)).findById(guiaId);
         verify(guiaRepository, never()).deleteById(any());
     }
 }
