@@ -70,7 +70,7 @@ public class GuiaService {
                 .orElseThrow(() -> new ResourceNotFoundException("Guia não encontrado com o ID: " + id));
 
         List<Guia.DadosTopico> dadosNovosTopicos = dto.topicos().stream()
-                .map(t -> new Guia.DadosTopico(t.id(), t.titulo(), t.descricao()))
+                .map(t -> new Guia.DadosTopico(t.id(), t.titulo(), t.conteudo()))
                 .toList();
 
         guia.atualizarEstrutura(dto.titulo(), dadosNovosTopicos);

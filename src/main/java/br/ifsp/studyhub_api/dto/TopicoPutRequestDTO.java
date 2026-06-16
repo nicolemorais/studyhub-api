@@ -11,5 +11,5 @@ public record TopicoPutRequestDTO(
     String titulo,
 
     @NotBlank(message = "A descrição do assunto não pode ser alterada para um valor vazio.")
-    String descricao
+    String conteudo
 ) {}

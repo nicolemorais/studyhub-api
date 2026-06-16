@@ -45,7 +45,7 @@ public class Guia {
     @Column(name = "url_material")
     private List<String> materiais = new ArrayList<>();
 
-    public record DadosTopico(UUID id, String titulo, String descricao) {
+    public record DadosTopico(UUID id, String titulo, String conteudo) {
     }
 
     protected Guia() {
@@ -66,7 +66,7 @@ public class Guia {
         this.sala = sala;
 
         for (DadosTopico dado : topicosIniciais) {
-            this.addTopico(dado.titulo(), dado.descricao());
+            this.addTopico(dado.titulo(), dado.conteudo());
         }
     }
 
@@ -80,8 +80,8 @@ public class Guia {
         }
     }
 
-    public void addTopico(String tituloTopico, String descricaoTopico) {
-        Topico novoTopico = new Topico(tituloTopico, descricaoTopico, this);
+    public void addTopico(String tituloTopico, String conteudoTopico) {
+        Topico novoTopico = new Topico(tituloTopico, conteudoTopico, this);
         this.topicos.add(novoTopico);
     }
 
@@ -104,9 +104,9 @@ public class Guia {
                 this.topicos.stream()
                         .filter(t -> t.getId().equals(dado.id()))
                         .findFirst()
-                        .ifPresent(t -> t.alterarConteudo(dado.titulo(), dado.descricao()));
+                        .ifPresent(t -> t.alterarConteudo(dado.titulo(), dado.conteudo()));
             } else {
-                this.addTopico(dado.titulo(), dado.descricao());
+                this.addTopico(dado.titulo(), dado.conteudo());
             }
         }
 
