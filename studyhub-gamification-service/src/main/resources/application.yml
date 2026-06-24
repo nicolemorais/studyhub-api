@@ -1,0 +1,43 @@
+server:
+  port: 8084
+
+spring:
+  application:
+    name: studyhub-gamification-service
+
+  # Conexão com o banco usando as variáveis de ambiente do .env
+  datasource:
+    url: ${AUTH_DB_URL:jdbc:postgresql://localhost:5432/studyhub_gamification_db}
+    username: ${AUTH_DB_USER}
+    password: ${AUTH_DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+  # Configurações do Hibernate/JPA
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  # Configuração da ferramenta de Migração (Flyway)
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+
+# Configuração do domínio de segurança
+api:
+  security:
+    token:
+      secret: ${JWT_SECRET}
+
+# Configuração do Broker de Eventos
+kafka:
+  bootstrap-servers: ${KAFKA_URL:localhost:9092}
+  producer:
+    key-serializer: org.apache.kafka.common.serialization.StringSerializer
+    value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    properties:
+      spring.json.add.type.headers: false
