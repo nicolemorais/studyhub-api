@@ -1,0 +1,59 @@
+services:
+  # 1. Banco de Dados
+  studyhub-auth-db:
+    image: postgres:15-alpine
+    container_name: studyhub-auth-db
+    environment:
+      POSTGRES_DB: auth_db
+      POSTGRES_USER: ${AUTH_DB_USER}
+      POSTGRES_PASSWORD: ${AUTH_DB_PASSWORD}
+    ports:
+      - "5432:5432"
+    networks:
+      - studyhub-net
+
+  # 2. Zookeeper
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+    networks:
+      - studyhub-net
+
+  # 3. Kafka
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - studyhub-net
+
+  # 4. Microsserviço
+  studyhub-auth-service:
+    build: 
+      context: ./studyhub-auth-service
+    ports:
+      - "8081:8081"
+    environment:
+      - AUTH_DB_URL=jdbc:postgresql://studyhub-auth-db:5432/studyhub_auth_db
+      - AUTH_DB_USER=${AUTH_DB_USER}
+      - AUTH_DB_PASSWORD=${AUTH_DB_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET}
+      - KAFKA_URL=kafka:9092
+    depends_on:
+      - studyhub-auth-db
+      - kafka
+    networks:
+      - studyhub-net
+
+networks:
+  studyhub-net:
+    driver: bridge

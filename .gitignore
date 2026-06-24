@@ -35,6 +35,7 @@ application-local.yml
 application-dev.properties
 application-dev.yml
 .env
+*.env
 
 ### VS Code ###
 .vscode/
