@@ -7,9 +7,9 @@ spring:
 
   # Conexão com o banco usando as variáveis de ambiente do .env
   datasource:
-    url: ${AUTH_DB_URL:jdbc:postgresql://localhost:5432/studyhub_classroom_db}
-    username: ${AUTH_DB_USER}
-    password: ${AUTH_DB_PASSWORD}
+    url: ${CLASSROOM_DB_URL:jdbc:postgresql://localhost:5432/studyhub_classroom_db}
+    username: ${CLASSROOM_DB_USER}
+    password: ${CLASSROOM_DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
   # Configurações do Hibernate/JPA
@@ -27,17 +27,17 @@ spring:
     enabled: true
     baseline-on-migrate: true
 
+  # Configuração do Broker de Eventos
+  kafka:
+    bootstrap-servers: ${KAFKA_URL:localhost:9092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: false
+
 # Configuração do domínio de segurança
 api:
   security:
     token:
       secret: ${JWT_SECRET}
-
-# Configuração do Broker de Eventos
-kafka:
-  bootstrap-servers: ${KAFKA_URL:localhost:9092}
-  producer:
-    key-serializer: org.apache.kafka.common.serialization.StringSerializer
-    value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-    properties:
-      spring.json.add.type.headers: false
