@@ -1,18 +1,6 @@
 services:
-  # 1. Banco de Dados
-  studyhub-auth-db:
-    image: postgres:15-alpine
-    container_name: studyhub-auth-db
-    environment:
-      POSTGRES_DB: auth_db
-      POSTGRES_USER: ${AUTH_DB_USER}
-      POSTGRES_PASSWORD: ${AUTH_DB_PASSWORD}
-    ports:
-      - "5432:5432"
-    networks:
-      - studyhub-net
+  # 1. INFRAESTRUTURA COMPARTILHADA (MENSAGERIA)
 
-  # 2. Zookeeper
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
     container_name: zookeeper
@@ -21,7 +9,6 @@ services:
     networks:
       - studyhub-net
 
-  # 3. Kafka
   kafka:
     image: confluentinc/cp-kafka:latest
     container_name: kafka
@@ -36,10 +23,24 @@ services:
     networks:
       - studyhub-net
 
-  # 4. Microsserviço
+  # 2. CONTEXTO: Autenticação
+
+  studyhub-auth-db:
+    image: postgres:15-alpine
+    container_name: studyhub-auth-db
+    environment:
+      POSTGRES_DB: studyhub_auth_db
+      POSTGRES_USER: ${AUTH_DB_USER}
+      POSTGRES_PASSWORD: ${AUTH_DB_PASSWORD}
+    ports:
+      - "5432:5432" # Porta padrão
+    networks:
+      - studyhub-net
+
   studyhub-auth-service:
-    build: 
+    build:
       context: ./studyhub-auth-service
+    container_name: studyhub-auth-service
     ports:
       - "8081:8081"
     environment:
@@ -50,6 +51,70 @@ services:
       - KAFKA_URL=kafka:9092
     depends_on:
       - studyhub-auth-db
+      - kafka
+    networks:
+      - studyhub-net
+
+  # 3. CONTEXTO: Chat
+
+  studyhub-comm-db:
+    image: postgres:15-alpine
+    container_name: studyhub-comm-db
+    environment:
+      POSTGRES_DB: studyhub_communication_db
+      POSTGRES_USER: ${COMMUNICATION_DB_USER}
+      POSTGRES_PASSWORD: ${COMMUNICATION_DB_PASSWORD}
+    ports:
+      - "5433:5432" # Porta mapeada na máquina hospedeira para não conflitar com o DB do Auth
+    networks:
+      - studyhub-net
+
+  studyhub-communication-service:
+    build:
+      context: ./studyhub-communication-service
+    container_name: studyhub-communication-service
+    ports:
+      - "8085:8085"
+    environment:
+      - COMMUNICATION_DB_URL=jdbc:postgresql://studyhub-comm-db:5432/studyhub_communication_db
+      - COMMUNICATION_DB_USER=${COMMUNICATION_DB_USER}
+      - COMMUNICATION_DB_PASSWORD=${COMMUNICATION_DB_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET}
+      - KAFKA_URL=kafka:9092
+    depends_on:
+      - studyhub-comm-db
+      - kafka
+    networks:
+      - studyhub-net
+
+  # 4. CONTEXTO: MONÓLITO (Salas e Guias)
+
+  studyhub-monolith-db:
+    image: postgres:15-alpine
+    container_name: studyhub-monolith-db
+    environment:
+      POSTGRES_DB: studyhub_db
+      POSTGRES_USER: ${MONOLITH_DB_USER}
+      POSTGRES_PASSWORD: ${MONOLITH_DB_PASSWORD}
+    ports:
+      - "5434:5432" # Terceiro DB em porta diferente localmente
+    networks:
+      - studyhub-net
+
+  studyhub-monolith:
+    build:
+      context: ./studyhub-api-monolith
+    container_name: studyhub-monolith
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://studyhub-monolith-db:5432/studyhub_db
+      - SPRING_DATASOURCE_USERNAME=${MONOLITH_DB_USER}
+      - SPRING_DATASOURCE_PASSWORD=${MONOLITH_DB_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET}
+      - KAFKA_URL=kafka:9092
+    depends_on:
+      - studyhub-monolith-db
       - kafka
     networks:
       - studyhub-net
