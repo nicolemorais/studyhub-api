@@ -66,7 +66,7 @@ public class AuthenticationControllerTest {
     void deveAutenticarComSucesso() {
 
         LoginRequestDTO request = new LoginRequestDTO("aluno@studyhub.com", "senha123");
-        Usuario usuarioMock = new Usuario("aluno@studyhub.com", "hashSenhaCriptografada", PerfilUsuario.ALUNO);
+        Usuario usuarioMock = new Usuario("Luciano Silva","aluno@studyhub.com", "hashSenhaCriptografada", PerfilUsuario.ALUNO);
 
         when(usuarioService.buscarPorEmail(request.email())).thenReturn(usuarioMock);
         when(passwordEncoder.matches(request.senha(), usuarioMock.getSenha())).thenReturn(true);
@@ -89,7 +89,7 @@ public class AuthenticationControllerTest {
     void deveLancarExcecaoParaSenhaIncorreta() {
 
         LoginRequestDTO request = new LoginRequestDTO("aluno@studyhub.com", "senhaIncorreta");
-        Usuario usuarioMock = new Usuario("aluno@studyhub.com", "hashSenhaCorreta", PerfilUsuario.ALUNO);
+        Usuario usuarioMock = new Usuario("Luciano Silva","aluno@studyhub.com", "hashSenhaCorreta", PerfilUsuario.ALUNO);
 
         when(usuarioService.buscarPorEmail(request.email())).thenReturn(usuarioMock);
         when(passwordEncoder.matches(request.senha(), usuarioMock.getSenha())).thenReturn(false);
@@ -107,7 +107,7 @@ public class AuthenticationControllerTest {
     void deveRetornarForbiddenParaUsuarioInativo() {
 
         LoginRequestDTO request = new LoginRequestDTO("professor@studyhub.com", "senha123");
-        Usuario usuarioMock = new Usuario("professor@studyhub.com", "hashSenha", PerfilUsuario.PROFESSOR);
+        Usuario usuarioMock = new Usuario("Luciano Silva","professor@studyhub.com", "hashSenha", PerfilUsuario.PROFESSOR);
         usuarioMock.desativarAcesso(); // Cenário de conta inativada
 
         when(usuarioService.buscarPorEmail(request.email())).thenReturn(usuarioMock);
@@ -129,11 +129,11 @@ public class AuthenticationControllerTest {
     @DisplayName("Deve registrar um novo usuário com sucesso repassando para o Service")
     void deveRegistrarUsuarioComSucesso() {
 
-        CadastroRequestDTO request = new CadastroRequestDTO("novo@studyhub.com", "senha123", PerfilUsuario.ALUNO);
+        CadastroRequestDTO request = new CadastroRequestDTO("Luciano Silva","novo@studyhub.com", "senha123", PerfilUsuario.ALUNO);
         org.springframework.web.util.UriComponentsBuilder uriBuilder = org.springframework.web.util.UriComponentsBuilder
                 .newInstance();
 
-        Usuario usuarioMock = new Usuario("novo@studyhub.com", "hash", PerfilUsuario.ALUNO);
+        Usuario usuarioMock = new Usuario("Luciano Silva","novo@studyhub.com", "hash", PerfilUsuario.ALUNO);
         ReflectionTestUtils.setField(usuarioMock, "id", UUID.randomUUID());
 
         when(usuarioService.registrarUsuario(request)).thenReturn(usuarioMock);
@@ -147,7 +147,7 @@ public class AuthenticationControllerTest {
     @Test
     @DisplayName("Deve permitir que a exceção do Service suba quando o e-mail for duplicado")
     void deveLancarExcecaoParaEmailDuplicado() {
-        CadastroRequestDTO request = new CadastroRequestDTO("duplicado@studyhub.com", "senha123",
+        CadastroRequestDTO request = new CadastroRequestDTO("Luciano Silva","duplicado@studyhub.com", "senha123",
                 PerfilUsuario.PROFESSOR);
         org.springframework.web.util.UriComponentsBuilder uriBuilder = org.springframework.web.util.UriComponentsBuilder
                 .newInstance();

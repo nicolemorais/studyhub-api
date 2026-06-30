@@ -50,7 +50,7 @@ class TokenServiceTest {
     @DisplayName("Deve gerar um token JWT válido contendo os claims corretos e o Correlation ID existente")
     void deveGerarTokenComClaimsECorrelationId() {
 
-        Usuario usuario = new Usuario("professor@studyhub.com", "senhaHash", PerfilUsuario.PROFESSOR);
+        Usuario usuario = new Usuario("Luciano Silva", "professor@studyhub.com", "senhaHash", PerfilUsuario.PROFESSOR);
         ReflectionTestUtils.setField(usuario, "id", UUID.randomUUID());
         String correlationIdEsperado = UUID.randomUUID().toString();
         MDC.put("correlationId", correlationIdEsperado);
@@ -72,7 +72,7 @@ class TokenServiceTest {
     @DisplayName("Deve gerar pioneiramente um Correlation ID se nenhum for encontrado no contexto MDC")
     void deveGerarCorrelationIdPioneiroNoToken() {
 
-        Usuario usuario = new Usuario("aluno@studyhub.com", "senhaHash", PerfilUsuario.ALUNO);
+        Usuario usuario = new Usuario("Luciano Silva","aluno@studyhub.com", "senhaHash", PerfilUsuario.ALUNO);
         ReflectionTestUtils.setField(usuario, "id", UUID.randomUUID());
 
         String token = tokenService.gerarToken(usuario);
@@ -88,7 +88,7 @@ class TokenServiceTest {
     @DisplayName("Deve validar um token legítimo e retornar o e-mail correspondente")
     void deveValidarTokenLegitimo() {
 
-        Usuario usuario = new Usuario("aluno@studyhub.com", "senhaHash", PerfilUsuario.ALUNO);
+        Usuario usuario = new Usuario("Luciano Silva", "aluno@studyhub.com", "senhaHash", PerfilUsuario.ALUNO);
         ReflectionTestUtils.setField(usuario, "id", UUID.randomUUID());
         String tokenGerado = tokenService.gerarToken(usuario);
 

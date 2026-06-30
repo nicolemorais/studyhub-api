@@ -16,7 +16,7 @@ class UsuarioTest {
     @DisplayName("Deve instanciar um usuário válido com estado inicial correto")
     void deveCriarUsuarioValido() {
 
-        Usuario usuario = new Usuario("professor@studyhub.com", "senhaCriptografada123", PerfilUsuario.PROFESSOR);
+        Usuario usuario = new Usuario("Luciano Silva","professor@studyhub.com", "senhaCriptografada123", PerfilUsuario.PROFESSOR);
 
         assertNotNull(usuario);
         assertEquals("professor@studyhub.com", usuario.getEmail());
@@ -29,11 +29,13 @@ class UsuarioTest {
     @DisplayName("Deve lançar exceção ao tentar criar usuário com e-mail inválido ou nulo")
     void deveLancarExcecaoParaEmailInvalido() {
         IllegalArgumentException excecaoNulo = assertThrows(IllegalArgumentException.class, () -> {
-            new Usuario(null, "senhaCriptografada123", PerfilUsuario.PROFESSOR);
+             new Usuario("Luciano Silva","professor.com", "senhaCriptografada123", PerfilUsuario.PROFESSOR);
+
         });
         assertEquals("O e-mail é obrigatório.", excecaoNulo.getMessage());
         IllegalArgumentException excecaoVazio = assertThrows(IllegalArgumentException.class, () -> {
-            new Usuario("   ", "senhaCriptografada123", PerfilUsuario.PROFESSOR);
+             new Usuario("Luciano Silva"," ", "senhaCriptografada123", PerfilUsuario.PROFESSOR);
+
         });
         assertEquals("O e-mail é obrigatório.", excecaoVazio.getMessage());
     }
@@ -42,7 +44,7 @@ class UsuarioTest {
     @DisplayName("Deve lançar exceção ao tentar criar usuário com senha inválida ou nula")
     void deveLancarExcecaoParaSenhaInvalida() {
         IllegalArgumentException excecao = assertThrows(IllegalArgumentException.class, () -> {
-            new Usuario("aluno@studyhub.com", "", PerfilUsuario.ALUNO);
+           new Usuario("Luciano Silva","professor@studyhub.com", " ", PerfilUsuario.PROFESSOR);
         });
         assertEquals("A senha é obrigatória.", excecao.getMessage());
     }
@@ -51,7 +53,7 @@ class UsuarioTest {
     @DisplayName("Deve desativar e reativar o acesso do usuário modificando o estado corretamente")
     void deveAlterarEstadoAtivoEDesativo() {
 
-        Usuario usuario = new Usuario("aluno@studyhub.com", "senhaCriptografada123", PerfilUsuario.ALUNO);
+       Usuario usuario = new Usuario("Luciano Silva","professor@studyhub.com", "senhaCriptografada123", PerfilUsuario.PROFESSOR);
 
         usuario.desativarAcesso();
 
@@ -66,7 +68,7 @@ class UsuarioTest {
     @DisplayName("Deve alterar a senha do usuário com sucesso quando fornecido um hash válido")
     void deveAlterarSenhaComSucesso() {
 
-        Usuario usuario = new Usuario("professor@studyhub.com", "senhaAntigaHash", PerfilUsuario.PROFESSOR);
+        Usuario usuario = new Usuario("Luciano Silva","professor@studyhub.com", "senhaAntigaHash", PerfilUsuario.PROFESSOR);
 
         // Act
         usuario.alterarSenha("novaSenhaCriptografadaHash");
@@ -78,7 +80,7 @@ class UsuarioTest {
     @DisplayName("Deve lançar exceção ao tentar alterar a senha para um valor em branco ou nulo")
     void deveLancarExcecaoAoAlterarSenhaInvalida() {
 
-        Usuario usuario = new Usuario("professor@studyhub.com", "senhaAntigaHash", PerfilUsuario.PROFESSOR);
+        Usuario usuario = new Usuario("Luciano Silva", "professor@studyhub.com", "senhaAntigaHash", PerfilUsuario.PROFESSOR);
 
         IllegalArgumentException excecao = assertThrows(IllegalArgumentException.class, () -> {
             usuario.alterarSenha("   ");
