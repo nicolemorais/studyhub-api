@@ -27,7 +27,7 @@ public class UsuarioApplicationService {
         }
 
         String senhaCriptografada = passwordEncoder.encode(data.senha());
-        Usuario novoUsuario = new Usuario(data.email(), senhaCriptografada, data.perfil());
+        Usuario novoUsuario = new Usuario(data.nome(), data.email(), senhaCriptografada, data.perfil());
 
         return this.usuarioRepository.save(novoUsuario);
     }

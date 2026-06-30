@@ -29,13 +29,12 @@ import br.ifsp.studyhub_api.dto.SalaRequestDTO;
 import br.ifsp.studyhub_api.dto.SalaResponseDTO;
 import br.ifsp.studyhub_api.exception.ResourceNotFoundException;
 import br.ifsp.studyhub_api.repository.UsuarioRepository;
-import br.ifsp.studyhub_api.security.SecurityConfigurations;
-import br.ifsp.studyhub_api.security.TokenService;
+import br.ifsp.studyhub_api.security.SecurityConfig;
 import br.ifsp.studyhub_api.service.SalaService;
 import br.ifsp.studyhub_api.service.GuiaService;
 
 @WebMvcTest(SalaController.class)
-@Import(SecurityConfigurations.class)
+@Import(SecurityConfig.class)
 @SuppressWarnings("null")
 public class SalaControllerTest {
 
@@ -53,9 +52,6 @@ public class SalaControllerTest {
 
     @MockitoBean
     private SalaService salaService;
-
-    @MockitoBean
-    private TokenService tokenService;
 
     @MockitoBean
     private UsuarioRepository usuarioRepository;

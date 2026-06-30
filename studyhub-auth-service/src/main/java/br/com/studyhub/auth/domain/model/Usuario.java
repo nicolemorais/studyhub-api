@@ -20,6 +20,9 @@ public class Usuario {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Column(nullable = false)
+    private String nome;
+
     @Column(nullable = false, unique = true)
     private String email;
 
@@ -39,14 +42,20 @@ public class Usuario {
     protected Usuario() {
     }
 
-    public Usuario(String email, String senhaCriptografada, PerfilUsuario perfil) {
+    public Usuario(String nome, String email, String senhaCriptografada, PerfilUsuario perfil) {
+        if (nome == null || nome.isBlank())
+            throw new IllegalArgumentException("O nome é obrigatório.");
+
         if (email == null || email.isBlank())
             throw new IllegalArgumentException("O e-mail é obrigatório.");
+
         if (senhaCriptografada == null || senhaCriptografada.isBlank())
             throw new IllegalArgumentException("A senha é obrigatória.");
+
         if (perfil == null)
             throw new IllegalArgumentException("O perfil do usuário é obrigatório.");
 
+        this.nome = nome;
         this.email = email;
         this.senha = senhaCriptografada;
         this.perfil = perfil;
@@ -71,6 +80,10 @@ public class Usuario {
 
     public UUID getId() {
         return id;
+    }
+
+    public String getNome() {
+        return nome;
     }
 
     public String getEmail() {

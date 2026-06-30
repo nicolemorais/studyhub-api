@@ -17,7 +17,6 @@ import br.ifsp.studyhub_api.dto.SalaRequestDTO;
 import br.ifsp.studyhub_api.dto.SalaResponseDTO;
 import br.ifsp.studyhub_api.exception.BusinessException;
 import br.ifsp.studyhub_api.exception.ResourceNotFoundException;
-import br.ifsp.studyhub_api.model.Perfil;
 import br.ifsp.studyhub_api.model.Sala;
 import br.ifsp.studyhub_api.model.Usuario;
 import br.ifsp.studyhub_api.repository.SalaRepository;
@@ -81,10 +80,6 @@ public class SalaService {
 
         Usuario aluno = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("Aluno não encontrado."));
-
-        if (!aluno.getPerfil().equals(Perfil.ALUNO)) {
-            throw new BusinessException("O e-mail informado não é elegível para matrícula.");
-        }
 
         sala.adicionarAluno(aluno);
         salaRepository.save(sala);

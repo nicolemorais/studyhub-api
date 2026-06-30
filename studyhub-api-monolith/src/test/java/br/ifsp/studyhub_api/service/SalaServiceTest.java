@@ -26,7 +26,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import br.ifsp.studyhub_api.dto.SalaAlunosResponseDTO;
-import br.ifsp.studyhub_api.model.Perfil;
 import br.ifsp.studyhub_api.model.Sala;
 import br.ifsp.studyhub_api.model.Usuario;
 import br.ifsp.studyhub_api.repository.SalaRepository;
@@ -68,8 +67,6 @@ class SalaServiceTest {
     @Test
     @DisplayName("Deve matricular um aluno com sucesso na sala")
     void matricularAlunoComSucesso() {
-        when(alunoMock.getPerfil()).thenReturn(Perfil.ALUNO);
-
         when(salaRepository.findById(salaId)).thenReturn(Optional.of(salaMock));
         when(usuarioRepository.findByEmail(emailAluno)).thenReturn(Optional.of(alunoMock));
 
