@@ -26,6 +26,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorMessageDTO> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        @SuppressWarnings("null")
         List<String> detalhesDosErros = ex.getBindingResult()
                 .getFieldErrors()
                 .stream()
