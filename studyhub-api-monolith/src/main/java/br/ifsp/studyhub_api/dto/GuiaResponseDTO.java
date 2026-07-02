@@ -5,17 +5,23 @@ import java.util.UUID;
 
 import br.ifsp.studyhub_api.model.Guia;
 
+
 public record GuiaResponseDTO(
         UUID id,
         String titulo,
-        List<TopicoResponseDTO> topicos,
-        List<String> materiais) {
-    public GuiaResponseDTO(Guia guia) {
-        this(
-            guia.getId(),
-            guia.getTitulo(),
-            guia.getTopicos().stream().map(TopicoResponseDTO::new).toList(),
-            guia.getMateriais()
-        );
+        String descricao,
+        UUID salaId,
+        List<TopicoResponseDTO> topicos
+    ) {
+    public static GuiaResponseDTO fromEntity(Guia guia) {
+        return new GuiaResponseDTO(
+                guia.getId(),
+                guia.getTitulo(),
+                guia.getDescricao(),
+                guia.getSalaId(),
+                guia.getTopicos()
+                        .stream()
+                        .map(TopicoResponseDTO::fromEntity)
+                        .toList());
     }
 }

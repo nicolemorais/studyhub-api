@@ -2,9 +2,6 @@ package br.ifsp.studyhub_api.repository;
 
 import java.util.List;
 import java.util.UUID;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,13 +12,10 @@ import br.ifsp.studyhub_api.model.Sala;
 @Repository
 public interface SalaRepository extends JpaRepository<Sala, UUID> {
 
-    Page<Sala> findByAlunosEmail(String email, Pageable pageable);
+    // Visão do Professor: Busca salas cujo UUID do criador coincide
+    List<Sala> findByProfessorId(UUID professorId);
 
-    Page<Sala> findByProfessorEmail(String email, Pageable pageable);
-
-    @Query("SELECT DISTINCT s FROM Sala s LEFT JOIN FETCH s.alunos WHERE s.professor.email = :email")
-    List<Sala> buscarSalasEProfessorComAlunos(@Param("email") String email);
-
-    @Query("SELECT DISTINCT s FROM Sala s JOIN s.alunos a LEFT JOIN FETCH s.alunos WHERE a.email = :email")
-    List<Sala> buscarSalasEAlunosPorAlunoEmail(@Param("email") String email);
+    // Visão do Aluno: Busca salas onde o UUID do aluno está contido na ElementCollection
+    @Query("SELECT s FROM Sala s JOIN s.alunosIds a WHERE a = :alunoId")
+    List<Sala> findByAlunoMatriculado(@Param("alunoId") UUID alunoId);
 }

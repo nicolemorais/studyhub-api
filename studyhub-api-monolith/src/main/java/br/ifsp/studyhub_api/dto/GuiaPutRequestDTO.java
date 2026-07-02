@@ -10,7 +10,7 @@ public record GuiaPutRequestDTO(
     String titulo,
 
     @NotEmpty(message = "A guia deve conter pelo menos 1 tópico ativo.") 
-    List<TopicoPutRequestDTO> topicos,
+    List<TopicoPutDTO> topicos,
 
     List<String> materiais
 ) {}

@@ -11,7 +11,7 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
-    public void configureMessageBroker(MessageBrokerRegistry config) {
+    public void configureMessageBroker(@SuppressWarnings("null") MessageBrokerRegistry config) {
         // Habilita um broker em memória para enviar mensagens de volta aos clientes no
         // prefixo /topic
         config.enableSimpleBroker("/topic");
@@ -22,7 +22,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     }
 
     @Override
-    public void registerStompEndpoints(StompEndpointRegistry registry) {
+    public void registerStompEndpoints(@SuppressWarnings("null") StompEndpointRegistry registry) {
         // Endpoint que o cliente usará para estabelecer a conexão WebSocket inicial
         registry.addEndpoint("/ws-chat")
                 .setAllowedOriginPatterns("*") // Configure adequadamente em produção
